@@ -1,55 +1,105 @@
 class Wheels {
-public:
-  // Constructor: left pin, right pin, speed (PWM) pin
-  Wheels(uint8_t leftPin, uint8_t rightPin, uint8_t speedPin)
-      : _leftPin(leftPin), _rightPin(rightPin), _speedPin(speedPin), _speed(255) {}
+    public:
+      // Constructor: left motor (dir1, dir2, enable), right motor (dir1, dir2, enable)
+      Wheels(uint8_t leftDir1, uint8_t leftDir2, uint8_t leftEnable,
+             uint8_t rightDir1, uint8_t rightDir2, uint8_t rightEnable)
+          : _lDir1(leftDir1), _lDir2(leftDir2), _lEnable(leftEnable),
+            _rDir1(rightDir1), _rDir2(rightDir2), _rEnable(rightEnable),
+            _lSpeed(255), _rSpeed(255) {}
 
-  // Initialize pins and leave wheels stopped
-  void init() {
-    pinMode(_leftPin, OUTPUT);
-    pinMode(_rightPin, OUTPUT);
-    pinMode(_speedPin, OUTPUT);
-    stop();
-  }
+      // Initialize pins and leave wheels stopped
+      void init() {
+        pinMode(_lDir1, OUTPUT);
+        pinMode(_lDir2, OUTPUT);
+        pinMode(_lEnable, OUTPUT);
+        pinMode(_rDir1, OUTPUT);
+        pinMode(_rDir2, OUTPUT);
+        pinMode(_rEnable, OUTPUT);
+        stop();
+      }
 
-  // Move both wheels forward
-  void forward() {
-    digitalWrite(_leftPin, HIGH);
-    digitalWrite(_rightPin, HIGH);
-    analogWrite(_speedPin, _speed);
-  }
+      // Move both wheels forward
+      void forward() {
+        leftForward();
+        rightForward();
+      }
 
-  // Stop both wheels
-  void stop() {
-    analogWrite(_speedPin, 0);
-    digitalWrite(_leftPin, LOW);
-    digitalWrite(_rightPin, LOW);
-  }
+      // Stop both wheels
+      void stop() {
+        leftStop();
+        rightStop();
+      }
 
-  // Turn left (left wheel stopped, right wheel moves)
-  void turnLeft() {
-    digitalWrite(_leftPin, LOW);
-    digitalWrite(_rightPin, HIGH);
-    analogWrite(_speedPin, _speed);
-  }
+      // Turn left: left stopped, right forward
+      void turnLeft() {
+        leftStop();
+        rightForward();
+      }
 
-  // Turn right (right wheel stopped, left wheel moves)
-  void turnRight() {
-    digitalWrite(_leftPin, HIGH);
-    digitalWrite(_rightPin, LOW);
-    analogWrite(_speedPin, _speed);
-  }
+      // Turn right: right stopped, left forward
+      void turnRight() {
+        rightStop();
+        leftForward();
+      }
 
-  // Set speed (0-255) on the PWM speed pin
-  void setSpeed(uint8_t speed) {
-    _speed = speed;
-    // If motors are running, update PWM immediately
-    analogWrite(_speedPin, _speed);
-  }
+      // Set same speed for both motors (0-255)
+      void setSpeed(uint8_t speed) {
+        _lSpeed = speed;
+        _rSpeed = speed;
+        leftSetSpeed(_lSpeed);
+        rightSetSpeed(_rSpeed);
+      }
 
-private:
-  uint8_t _leftPin;
-  uint8_t _rightPin;
-  uint8_t _speedPin;
-  uint8_t _speed;
-};
+      // Set individual speeds for left and right (0-255)
+      void setSpeeds(uint8_t leftSpeed, uint8_t rightSpeed) {
+        _lSpeed = leftSpeed;
+        _rSpeed = rightSpeed;
+        leftSetSpeed(_lSpeed);
+        rightSetSpeed(_rSpeed);
+      }
+
+    private:
+      // Left motor control helpers (private - used internally)
+      void leftForward() {
+        // Convention: dir1 HIGH, dir2 LOW = forward
+        digitalWrite(_lDir1, HIGH);
+        digitalWrite(_lDir2, LOW);
+        analogWrite(_lEnable, _lSpeed);
+      }
+
+      void leftStop() {
+        analogWrite(_lEnable, 0);
+        digitalWrite(_lDir1, LOW);
+        digitalWrite(_lDir2, LOW);
+      }
+
+      void leftSetSpeed(uint8_t speed) { analogWrite(_lEnable, speed); }
+
+      // Right motor control helpers (private - used internally)
+      void rightForward() {
+        // Convention: dir1 HIGH, dir2 LOW = forward
+        digitalWrite(_rDir1, HIGH);
+        digitalWrite(_rDir2, LOW);
+        analogWrite(_rEnable, _rSpeed);
+      }
+
+      void rightStop() {
+        analogWrite(_rEnable, 0);
+        digitalWrite(_rDir1, LOW);
+        digitalWrite(_rDir2, LOW);
+      }
+
+      void rightSetSpeed(uint8_t speed) { analogWrite(_rEnable, speed); }
+
+      // Pin members
+      uint8_t _lDir1;
+      uint8_t _lDir2;
+      uint8_t _lEnable;
+      uint8_t _rDir1;
+      uint8_t _rDir2;
+      uint8_t _rEnable;
+
+      // Current speeds
+      uint8_t _lSpeed;
+      uint8_t _rSpeed;
+    };
