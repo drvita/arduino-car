@@ -24,6 +24,12 @@ class Wheels {
         rightForward();
       }
 
+      // Move both wheels in reverse
+      void reverse() {
+        leftReverse();
+        rightReverse();
+      }
+
       // Stop both wheels
       void stop() {
         leftStop();
@@ -58,6 +64,12 @@ class Wheels {
         digitalWrite(_lDir2, LOW);
         analogWrite(_lEnable, _lSpeed);
       }
+      void leftReverse() {
+        // Reverse: dir1 LOW, dir2 HIGH
+        digitalWrite(_lDir1, LOW);
+        digitalWrite(_lDir2, HIGH);
+        analogWrite(_lEnable, _lSpeed);
+      }
       void leftStop() {
         analogWrite(_lEnable, 0);
         digitalWrite(_lDir1, LOW);
@@ -70,6 +82,12 @@ class Wheels {
         // Convention: dir1 HIGH, dir2 LOW = forward
         digitalWrite(_rDir1, HIGH);
         digitalWrite(_rDir2, LOW);
+        analogWrite(_rEnable, _rSpeed);
+      }
+      void rightReverse() {
+        // Reverse: dir1 LOW, dir2 HIGH
+        digitalWrite(_rDir1, LOW);
+        digitalWrite(_rDir2, HIGH);
         analogWrite(_rEnable, _rSpeed);
       }
       void rightStop() {

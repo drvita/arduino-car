@@ -10,19 +10,32 @@ This repository contains a small Arduino sketch for a car/robot controller. It s
 - Bluetooth control (e.g., HC-05/HC-06)
 - Obstacle avoidance using proximity sensors (ultrasonic or IR distance)
 - Line following using line sensor array
-- Simple Wheels class that accepts left, right and PWM speed pins and exposes init(), forward(), stop(), turnLeft(), turnRight(), setSpeed()
+- Wheels class now supports L298N H-bridge drivers (3 pins per motor) and exposes:
+  - init(), forward(), reverse(), stop(), turnLeft(), turnRight()
+  - setSpeed(uint8_t) to set both motors' speed
+  - setSpeed(uint8_t leftSpeed, uint8_t rightSpeed) to set individual motor speeds
 
 ## Files
 
 - `main.ino` — main sketch. Instantiates `Wheels` and is the entry point for control logic.
-- `Wheels.h` — header-only motor control class (direction pins + shared PWM speed pin).
+- `Wheels.h` — header-only motor control class for L298N (two direction pins + enable PWM pin per motor).
 
-## Wiring (example)
+## Wiring (example for L298N)
 
-- Left wheel direction pin: D5
-- Right wheel direction pin: D6
-- Speed (PWM) pin / enable: D3 (must be PWM-capable)
-- IR receiver: connect to an available digital pin (e.g., D7) and GND/VCC
+Each motor needs three pins (L298N):
+
+- Left motor:
+  - Direction pin 1 (e.g., D4)
+  - Direction pin 2 (e.g., D5)
+  - Enable / PWM pin (e.g., D3) — must be PWM-capable
+- Right motor:
+  - Direction pin 1 (e.g., D6)
+  - Direction pin 2 (e.g., D7)
+  - Enable / PWM pin (e.g., D11) — must be PWM-capable
+
+Other peripherals:
+
+- IR receiver: connect to an available digital pin (e.g., D8) and GND/VCC
 - Bluetooth RX/TX: connect module TX->RX of board, module RX->TX of board (use voltage divider for 5V boards if needed)
 - Proximity sensors: connect trigger/echo (ultrasonic) or signal pins (IR distance) to digital/analog pins as needed
 - Line sensors: connect to analog/digital pins used by your sensor array
@@ -39,22 +52,30 @@ Adjust pin numbers in `main.ino` to match your wiring.
 Example (already in `main.ino`):
 
 ```cpp
-// set up pins in main.ino
-Wheels wheels(LEFT_PIN, RIGHT_PIN, SPEED_PIN);
+// set up pins for L298N in main.ino
+// Wheels(leftDir1, leftDir2, leftEnable, rightDir1, rightDir2, rightEnable)
+Wheels wheels(4, 5, 3, 6, 7, 11);
+
 void setup() {
   wheels.init();
-  wheels.setSpeed(200);
-  wheels.forward();
+  wheels.setSpeed(200);           // set both motors to speed 200 (0-255)
+  wheels.forward();               // move forward
+  delay(2000);
+  wheels.turnLeft();              // turn left
+  delay(1000);
+  wheels.reverse();               // move backward
+  delay(1000);
+  wheels.stop();                  // stop
 }
 ```
 
 ## Notes & assumptions
 
-- `Wheels.h` assumes one direction pin per motor and a single shared PWM enable/speed pin. If your driver needs two direction pins per motor (H-bridge IN1/IN2) or individual PWM per motor, adapt the class accordingly.
+- `Wheels.h` assumes two direction pins per motor (IN1/IN2) and one PWM enable pin per motor (L298N-style H-bridge). If your motor driver uses a different wiring scheme, adapt the class accordingly.
 - Ensure the `SPEED_PIN` is PWM-capable on your board.
 - If using Bluetooth, remember to disable Serial Monitor or use a different serial port for debugging if conflicts occur.
 - For smaller firmware size: header-only implementation reduces the need for separate compilation units, but keep an eye on flash usage when adding features.
 
 ## License
 
-Use as you wish. Add a license file if you need one.
+This project is released under the MIT License — see the `LICENSE` file for details. In short: you are free to use, copy, modify and distribute this code.
