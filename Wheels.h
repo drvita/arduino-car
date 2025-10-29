@@ -50,14 +50,6 @@ class Wheels {
         rightSetSpeed(_rSpeed);
       }
 
-      // Set individual speeds for left and right (0-255)
-      void setSpeeds(uint8_t leftSpeed, uint8_t rightSpeed) {
-        _lSpeed = leftSpeed;
-        _rSpeed = rightSpeed;
-        leftSetSpeed(_lSpeed);
-        rightSetSpeed(_rSpeed);
-      }
-
     private:
       // Left motor control helpers (private - used internally)
       void leftForward() {
@@ -66,13 +58,11 @@ class Wheels {
         digitalWrite(_lDir2, LOW);
         analogWrite(_lEnable, _lSpeed);
       }
-
       void leftStop() {
         analogWrite(_lEnable, 0);
         digitalWrite(_lDir1, LOW);
         digitalWrite(_lDir2, LOW);
       }
-
       void leftSetSpeed(uint8_t speed) { analogWrite(_lEnable, speed); }
 
       // Right motor control helpers (private - used internally)
@@ -82,13 +72,11 @@ class Wheels {
         digitalWrite(_rDir2, LOW);
         analogWrite(_rEnable, _rSpeed);
       }
-
       void rightStop() {
         analogWrite(_rEnable, 0);
         digitalWrite(_rDir1, LOW);
         digitalWrite(_rDir2, LOW);
       }
-
       void rightSetSpeed(uint8_t speed) { analogWrite(_rEnable, speed); }
 
       // Pin members
