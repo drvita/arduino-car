@@ -17,7 +17,7 @@ This repository contains a small Arduino sketch for a car/robot controller. It s
 
 ## Files
 
-- `main.ino` — main sketch. Instantiates `Wheels` and is the entry point for control logic.
+- `arduino-car.ino` — arduino-car sketch. Instantiates `Wheels` and is the entry point for control logic.
 - `Wheels.h` — header-only motor control class for L298N (two direction pins + enable PWM pin per motor).
 
 ## Wiring (example for L298N)
@@ -40,19 +40,19 @@ Other peripherals:
 - Proximity sensors: connect trigger/echo (ultrasonic) or signal pins (IR distance) to digital/analog pins as needed
 - Line sensors: connect to analog/digital pins used by your sensor array
 
-Adjust pin numbers in `main.ino` to match your wiring.
+Adjust pin numbers in `arduino-car.ino` to match your wiring.
 
 ## Usage
 
-1. Open the sketch (`main.ino`) in the Arduino IDE or use Arduino CLI.
+1. Open the sketch (`arduino-car.ino`) in the Arduino IDE or use Arduino CLI.
 2. Select the correct board and port.
 3. Verify and upload.
 4. Implement/control logic in `loop()` to switch between IR, Bluetooth, avoidance and line-following behaviors. The `Wheels` object provides simple motor commands.
 
-Example (already in `main.ino`):
+Example (already in `arduino-car.ino`):
 
 ```cpp
-// set up pins for L298N in main.ino
+// set up pins for L298N in arduino-car.ino
 // Wheels(leftDir1, leftDir2, leftEnable, rightDir1, rightDir2, rightEnable)
 Wheels wheels(4, 5, 3, 6, 7, 11);
 
